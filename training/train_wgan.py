@@ -1,0 +1,2 @@
+from models.discriminators import DiscriminatorV1
+from models.generators import GeneratorV1
