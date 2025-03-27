@@ -1,5 +1,5 @@
-#%%
-
+import yaml
+from torchvision.utils import save_image, make_grid
 import torch
 import torch.nn as nn
 from torchvision import transforms
@@ -8,99 +8,59 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 
 from load_data import load_mnist
-from loss_functions.vae_loss import loss_function
+from loss_functions.vae_loss import vae_loss
 from models.vae import VAE, Encoder, Decoder
+from training.train_vae import vae_train_epoch
 
 
-cuda = True
-DEVICE = torch.device("cuda" if cuda else "cpu")
+with open("configs/vae_config.yaml") as f:
+    config = yaml.safe_load(f)
+
+    training_config = config["training"]
+    model_config = config["model_specifics"]
 
 
-batch_size = 100
-lr = 1e-3
-epochs = 30
+    batch_size = training_config["batch_size"]
 
-x_dim  = 784
-hidden_dim = 400
-latent_dim = 200
+    transform = training_config["transform"]
+    device = training_config["device"]
+    n_epochs = training_config["n_epochs"]
+    learning_rate = training_config["learning_rate"]
 
+    hidden_dim = model_config["hidden_dim"]
+    latent_dim = model_config["latent_dim"]
 
-train_loader, test_loader, train_set, test_set = load_mnist(batch_size=batch_size)
+    x_dim = 28 * 28 # Image size
 
-BCE_loss = nn.BCELoss()
+    train_loader, test_loader, train_set, test_set = load_mnist(batch_size=batch_size)
 
-encoder = Encoder(input_dim=x_dim, hidden_dim=hidden_dim, latent_dim=latent_dim)
-decoder = Decoder(latent_dim=latent_dim, hidden_dim = hidden_dim, output_dim = x_dim)
+    BCE_loss = nn.BCELoss()
 
-model = VAE(encoder, decoder, DEVICE).to(DEVICE)
+    encoder = Encoder(input_dim=x_dim, hidden_dim=hidden_dim, latent_dim=latent_dim)
+    decoder = Decoder(latent_dim=latent_dim, hidden_dim=hidden_dim, output_dim=x_dim)
 
-optimizer = Adam(model.parameters(), lr=lr)
+    model = VAE(encoder, decoder, device).to(device)
 
+    optimizer = Adam(model.parameters(), lr=learning_rate)
 
-
-print("Start training VAE...")
-model.train()
-
-for epoch in range(epochs):
-    overall_loss = 0
-    for batch_idx, (x, _) in enumerate(train_loader):
-        x = x.view(batch_size, x_dim)
-        x = x.to(DEVICE)
-
-        optimizer.zero_grad()
-
-        x_hat, mean, log_var = model(x)
-        loss = loss_function(x, x_hat, mean, log_var)
-        
-        overall_loss += loss.item()
-        
-        loss.backward()
-        optimizer.step()
-        
-    print("\tEpoch", epoch + 1, "complete!", "\tAverage Loss: ", overall_loss / (batch_idx*batch_size))
-    
-print("Finish!!")
+    constant_noise = torch.randn(batch_size, latent_dim).to(device)
 
 
+    print("Start training VAE...")
+    model.train()
 
-#%%
-from tqdm import tqdm
-import matplotlib.pyplot as plt
+    for epoch in range(n_epochs):
+        losses = vae_train_epoch(model, optimizer, train_loader, config)
+        print(
+            "\tEpoch",
+            epoch + 1,
+            "complete!",
+            "\tAverage Loss: ",
+            str(sum(losses)/len(losses)),
+        )
+        with torch.no_grad():
+            generated_images = decoder(constant_noise)
 
-with torch.no_grad():
-    for batch_idx, (x, _) in enumerate(tqdm(test_loader)):
-        x = x.view(batch_size, x_dim)
-        x = x.to(DEVICE)
-        
-        x_hat, _, _ = model(x)
+            save_image(generated_images.view(batch_size, 1, 28, 28), f"output/vae_generated_{epoch}.png")
 
-
-        break
-
-#%%
-def show_image(x, idx):
-    x = x.view(batch_size, 28, 28)
-
-    fig = plt.figure()
-    plt.imshow(x[idx].cpu().numpy())
-
-
-show_image(x, 1)
-
-
-#%% 
-show_image(x_hat, 1)
-
-#%%
-from torchvision.utils import save_image, make_grid
-
-
-with torch.no_grad():
-    noise = torch.randn(batch_size, latent_dim).to(DEVICE)
-    generated_images = decoder(noise)
-
-save_image(generated_images.view(batch_size, 1, 28, 28), 'generated_sample.png')
-
-
-#%% 
-show_image(generated_images, idx=27)
+    print("Finish!!")

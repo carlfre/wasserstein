@@ -5,12 +5,22 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 
-def load_mnist(batch_size: int, transform=None):
+def load_mnist(batch_size: int, transform: Literal["identity", "normalize"] = "identity"):
     image_path = './data'
-    if transform is None:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-        ])
+
+    match transform:
+        case "normalize":
+            transform = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize(mean=(0.5,), std=(0.5,))
+            ])
+        case "identity":
+            transform = transforms.Compose([
+                transforms.ToTensor()
+            ])
+        case _:
+            raise ValueError("Invalid transform argument. Use 'identity' or 'normalize'.")
+
 
     train_set = torchvision.datasets.MNIST(
         root=image_path, train=True,
