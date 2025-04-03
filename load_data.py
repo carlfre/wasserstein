@@ -1,4 +1,5 @@
 from typing import Literal
+import yaml
 
 import torchvision
 from torchvision import transforms
@@ -35,4 +36,12 @@ def load_mnist(batch_size: int, transform: Literal["identity", "normalize"] = "i
     test_loader  = DataLoader(dataset=test_set,  batch_size=batch_size, shuffle=False)
     
     return train_loader, test_loader, train_set, test_set
+
+
+def load_config(config_path: str):
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
+    
+    return config
+    
 

@@ -60,7 +60,11 @@ with open("configs/vae_config.yaml") as f:
         )
         with torch.no_grad():
             generated_images = decoder(constant_noise)
-
             save_image(generated_images.view(batch_size, 1, 28, 28), f"output/vae_generated_{epoch}.png")
+        
+        torch.save(
+            model.state_dict(),
+            f"checkpoints/vae_model_epoch_{epoch}.pth"
+        )
 
     print("Finish!!")

@@ -47,10 +47,10 @@ class Decoder(nn.Module):
     
 
 class VAE(nn.Module):
-    def __init__(self, Encoder: Encoder, Decoder: Decoder, device):
+    def __init__(self, encoder: Encoder, decoder: Decoder, device):
         super(VAE, self).__init__()
-        self.Encoder = Encoder
-        self.Decoder = Decoder
+        self.encoder = encoder
+        self.decoder = decoder
         self.device = device
         
     def reparameterization(self, mean, var):
@@ -60,9 +60,9 @@ class VAE(nn.Module):
         
                 
     def forward(self, x):
-        mean, log_var = self.Encoder(x)
+        mean, log_var = self.encoder(x)
         z = self.reparameterization(mean, torch.exp(0.5 * log_var)) # takes exponential function (log var -> var)
-        x_hat = self.Decoder(z)
+        x_hat = self.decoder(z)
         
         return x_hat, mean, log_var
         

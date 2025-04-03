@@ -9,6 +9,7 @@ training:
 model_specifics:
   hidden_dim: 400
   latent_dim: 200
+  image_dim: "28 28"
 
 # model_specifics:
 #   n_channel_scaling_factor: 64 

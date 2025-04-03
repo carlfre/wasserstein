@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-def make_generator_network_wgan(size_of_noise_vector: int, n_channel_scaling_factor: int):
+def make_generator_network_wgan(z_size: int, n_channel_scaling_factor: int):
     model = nn.Sequential(
-    nn.ConvTranspose2d(size_of_noise_vector, n_channel_scaling_factor*4, 4,
+    nn.ConvTranspose2d(z_size, n_channel_scaling_factor*4, 4,
     1, 0, bias=False),
     nn.InstanceNorm2d(n_channel_scaling_factor*4),
     nn.LeakyReLU(0.2),
