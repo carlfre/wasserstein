@@ -40,6 +40,9 @@ def big_loop_vae(n_generations: int, dataset_size: int) -> None:
 
     print("Done!")
 
+
+# TODO: add a big loop for wgan
+
 if __name__ == "__main__":
     big_loop_vae(3, 10000)
 

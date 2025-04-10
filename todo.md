@@ -1,4 +1,7 @@
 * Set up ml node
 * set up training loop. -> make checkpoints.
   * Think about a good naming convention
-* want training loops to take in a test dataloader and evaluate as we go.
+* want training loops to take in a **test** dataloader and evaluate as we go.
+* train_wgan: write a full train loop.
+* main.py: big loop for wgan.
+* Define and compute some metrics.

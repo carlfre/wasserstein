@@ -102,3 +102,5 @@ def wgan_train_epoch(
         )
     return d_losses, g_losses
 
+
+#TODO: add a train loop function. Modeled after vae trianing.
