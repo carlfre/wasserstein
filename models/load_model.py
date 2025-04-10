@@ -5,7 +5,7 @@ from models.vae import VAE, Decoder, Encoder
 
 
 
-def load_vae_model(vae_path: str, config: dict[str, dict]):
+def load_vae_model(config: dict[str, dict], vae_path: str | None = None):
     """
     Load the VAE model from the specified path.
     """
@@ -23,13 +23,14 @@ def load_vae_model(vae_path: str, config: dict[str, dict]):
     encoder = Encoder(flattened_dim, hidden_dim, latent_dim)
     decoder = Decoder(latent_dim, hidden_dim, flattened_dim)
     vae = VAE(encoder, decoder, device)
-    vae.load_state_dict(torch.load(vae_path, map_location=device))
+    if vae_path is not None:
+        vae.load_state_dict(torch.load(vae_path, map_location=device))
     vae.to(device)
     vae.eval()
     return vae
 
 
-def load_discriminator_model(discriminator_path: str, config: dict[str, dict]):
+def load_discriminator_model(config: dict[str, dict], discriminator_path: str | None = None):
     """
     Load the discriminator model from the specified path.
     """
@@ -41,13 +42,14 @@ def load_discriminator_model(discriminator_path: str, config: dict[str, dict]):
     n_channel_scaling_factor = model_config["n_channel_scaling_factor"]
     
     discriminator = DiscriminatorWGAN(n_channel_scaling_factor)
-    discriminator.load_state_dict(torch.load(discriminator_path, map_location=device))
+    if discriminator_path is not None:
+        discriminator.load_state_dict(torch.load(discriminator_path, map_location=device))
     discriminator.to(device)
     discriminator.eval()
     return discriminator
 
 
-def load_generator_model(generator_path: str, config: dict[str, dict]):
+def load_generator_model(config: dict[str, dict], generator_path: str | None = None):
     """
     Load the generator model from the specified path.
     """
@@ -57,10 +59,11 @@ def load_generator_model(generator_path: str, config: dict[str, dict]):
     device = training_config["device"]
 
     n_channel_scaling_factor = model_config["n_channel_scaling_factor"]
-    z_size = model_config["z_size"]
+    latent_dim = model_config["latent_dim"]
 
-    generator = make_generator_network_wgan(z_size, n_channel_scaling_factor)
-    generator.load_state_dict(torch.load(generator_path, map_location=device))
+    generator = make_generator_network_wgan(latent_dim, n_channel_scaling_factor)
+    if generator_path is not None:
+        generator.load_state_dict(torch.load(generator_path, map_location=device))
     generator.to(device)
     generator.eval()
     return generator
@@ -74,21 +77,21 @@ if __name__ == "__main__":
     config = load_config("configs/wgan_config.yaml")
 
     discriminator = load_discriminator_model(
+        config,
         "checkpoints/disc_model_epoch_26.pth",
-        config
     )
 
     print("sld")
     generator = load_generator_model(
+        config,
         "checkpoints/gen_model_epoch_26.pth",
-        config
     )
 
     print("jdljl")
     config = load_config("configs/vae_config.yaml")
     vae = load_vae_model(
+        config,
         "checkpoints/vae_model_epoch_3.pth",
-        config
     )
 
 

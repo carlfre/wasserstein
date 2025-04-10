@@ -1,13 +1,13 @@
-import torch
-import numpy as np
-from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST
+# import torch
+# import numpy as np
+# from torch.utils.data import DataLoader
+# from torchvision.datasets import MNIST
 
-from loss_functions.wgan_loss import gradient_penalty
-from models.generators import make_generator_network_wgan
-from models.discriminators import DiscriminatorWGAN
-from utils import create_noise, create_samples
-from load_data import load_mnist
+# from loss_functions.wgan_loss import gradient_penalty
+# from models.generators import make_generator_network_wgan
+# from models.discriminators import DiscriminatorWGAN
+# from utils import create_noise, create_samples
+# from load_data import load_mnist
 
 
 
@@ -31,8 +31,13 @@ from load_data import load_mnist
 #     break
 
 
-import yaml
+# import yaml
 
-with open('wgan_config.yaml') as f:
-    config = yaml.safe_load(f)
-    print(config)
+# with open('wgan_config.yaml') as f:
+#     config = yaml.safe_load(f)
+#     print(config)
+
+
+# a = [1, 2, [4]]
+
+# b = {a: "3l4jl43"}

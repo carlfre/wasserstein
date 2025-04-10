@@ -2,7 +2,7 @@ training:
   batch_size: 64
   transform: "identity"
   device: "cuda"
-  n_epochs: 30
+  n_epochs: 10
   learning_rate: 0.001
 
 
@@ -11,9 +11,3 @@ model_specifics:
   latent_dim: 200
   image_dim: "28 28"
 
-# model_specifics:
-#   n_channel_scaling_factor: 64 
-#   lambda_gp: 10
-#   mode_z: "uniform"
-#   z_size: 100
-#   n_critic_iterations: 5

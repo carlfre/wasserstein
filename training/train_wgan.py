@@ -13,13 +13,13 @@ def generator_training_iteration(
     generator: torch.nn.Module,
     discriminator: DiscriminatorWGAN,
     g_optimizer: torch.optim.Optimizer,
-    z_size: int,
-    mode_z: Literal["uniform", "normal"],
+    latent_dim: int,
+    latent_distribution: Literal["uniform", "normal"],
     device: str,
 ):
     generator.zero_grad()
     batch_size = x.size(0)
-    input_z = create_noise(batch_size, z_size, mode_z).to(device)
+    input_z = create_noise(batch_size, latent_dim, latent_distribution).to(device)
     g_output = generator(input_z)
 
     d_generated = discriminator(g_output)
@@ -36,8 +36,8 @@ def discriminator_training_iteration(
     discriminator: DiscriminatorWGAN,
     generator: torch.nn.Module,
     d_optimizer: torch.optim.Optimizer,
-    z_size: int,
-    mode_z: str,
+    latent_dim: int,
+    latent_distribution: str,
     lambda_gp: float,
     device: str,
 ) -> float:
@@ -48,7 +48,7 @@ def discriminator_training_iteration(
 
     # Calculate probabilities on real and generated data
     d_real = discriminator(x)
-    input_z = create_noise(batch_size, z_size, mode_z).to(device)
+    input_z = create_noise(batch_size, latent_dim, latent_distribution).to(device)
     g_output = generator(input_z)
     d_generated = discriminator(g_output)
     d_loss = (
@@ -76,8 +76,8 @@ def wgan_train_epoch(
     device = training_config["device"]
 
     lambda_gp = model_config["lambda_gp"]
-    mode_z = model_config["mode_z"]
-    z_size = model_config["z_size"]
+    latent_distribution = model_config["latent_distribution"]
+    latent_dim = model_config["latent_dim"]
     n_critic_iterations = model_config["n_critic_iterations"]
 
     generator.train()
@@ -89,15 +89,15 @@ def wgan_train_epoch(
                 discriminator,
                 generator,
                 d_optimizer,
-                z_size,
-                mode_z,
+                latent_dim,
+                latent_distribution,
                 lambda_gp,
                 device,
             )
         d_losses.append(d_loss)
         g_losses.append(
             generator_training_iteration(
-                x, generator, discriminator, g_optimizer, z_size, mode_z, device
+                x, generator, discriminator, g_optimizer, latent_dim, latent_distribution, device
             )
         )
     return d_losses, g_losses

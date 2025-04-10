@@ -8,6 +8,6 @@ training:
 model_specifics:
   n_channel_scaling_factor: 64 
   lambda_gp: 10
-  mode_z: "uniform"
-  z_size: 100
+  latent_distribution: "uniform"
+  latent_dim: 100
   n_critic_iterations: 5

@@ -1,33 +1,29 @@
 import torch
+import numpy as np
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 
-from models.vae import VAE
+
+from models.vae import VAE, Encoder, Decoder
 
 
 from loss_functions.vae_loss import vae_loss
+
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from torch.optim import Adam
 
 def vae_train_epoch(
         model: VAE,
         optimizer: Optimizer,
         data_loader: DataLoader,
         config: dict,
-) -> float:
+) -> list[float]:
     training_config = config["training"]
-
-    batch_size = training_config["batch_size"]
     device = training_config["device"]
-
-    # # Get x_dim, i.e. the size of the image. Should be constant across batches
-    # data_iter = iter(data_loader)
-    # x, _ = next(data_iter)
-    # x_dim = x.size(2) * x.size(3)
 
     losses = []
     for batch_idx, (x, _) in enumerate(data_loader):
-        # print(x.size(0), x.size(1), x.size(2), x.size(3))
-        x_dim = x.size(2) * x.size(3)
-        x = x.view(-1, x_dim)
         x = x.to(device)
 
         optimizer.zero_grad()
@@ -40,3 +36,19 @@ def vae_train_epoch(
         loss.backward()
         optimizer.step()
     return losses
+
+
+def train_vae(model: VAE, dataloader: DataLoader, config: dict[str, dict[str]]) -> tuple[VAE, list[float]]:
+
+        training_config = config["training"]
+        n_epochs = training_config["n_epochs"]
+        learning_rate = training_config["learning_rate"]
+
+        optimizer = Adam(model.parameters(), lr=learning_rate)
+        model.train()
+        losses = []
+        for epoch in range(n_epochs):
+            epoch_losses = vae_train_epoch(model, optimizer, dataloader, config)
+            losses.append(np.mean(epoch_losses))
+
+        return model, losses

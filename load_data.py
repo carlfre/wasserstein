@@ -6,7 +6,12 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 
-def load_mnist(batch_size: int, transform: Literal["identity", "normalize"] = "identity"):
+def load_mnist(config: dict[str, dict[str]]):
+
+    training_config = config["training"]
+    batch_size = training_config["batch_size"]
+    transform = training_config["transform"]
+
     image_path = './data'
 
     match transform:
