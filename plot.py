@@ -1,10 +1,12 @@
+from typing import Union
+
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
 #TODO: write some code for plotting an image nicely
 
-def plot_image(image: torch.Tensor | np.ndarray, filename=None, show=True) -> None:
+def plot_image(image: Union[torch.Tensor, np.ndarray], filename=None, show=True) -> None:
     if isinstance(image, torch.Tensor):
         image = image.cpu().numpy()
 

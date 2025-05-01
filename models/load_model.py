@@ -1,3 +1,5 @@
+from typing import Optional
+
 import torch
 from models.discriminators import DiscriminatorWGAN
 from models.generators import make_generator_network_wgan
@@ -30,7 +32,7 @@ def load_vae_model(config: dict[str, dict], vae_path: str | None = None):
     return vae
 
 
-def load_discriminator_model(config: dict[str, dict], discriminator_path: str | None = None):
+def load_discriminator_model(config: dict[str, dict], discriminator_path: Optional[str] = None):
     """
     Load the discriminator model from the specified path.
     """
@@ -49,7 +51,7 @@ def load_discriminator_model(config: dict[str, dict], discriminator_path: str | 
     return discriminator
 
 
-def load_generator_model(config: dict[str, dict], generator_path: str | None = None):
+def load_generator_model(config: dict[str, dict], generator_path: Optional[str] = None):
     """
     Load the generator model from the specified path.
     """

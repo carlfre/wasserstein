@@ -21,7 +21,7 @@ class GeneratedDataset(Dataset):
 def generate_dataset_vae(
         vae: VAE,
         dataset_size: int,
-        config: dict[str, dict[str]],      
+        config: dict[str],      
 ) -> tuple[Dataset, DataLoader]:
     """
     Generate a dataset of samples using the VAE model.
@@ -57,7 +57,7 @@ def generate_dataset_vae(
 def generate_dataset_wgan(
     generator,
     dataset_size: int,
-    config: dict[str, dict[str]],
+    config: dict[str],
 ) -> tuple[Dataset, DataLoader]:
     """
     Generate a dataset of samples using the WGAN generator.

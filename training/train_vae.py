@@ -38,7 +38,7 @@ def vae_train_epoch(
     return losses
 
 
-def train_vae(model: VAE, dataloader: DataLoader, config: dict[str, dict[str]]) -> tuple[VAE, list[float]]:
+def train_vae(model: VAE, dataloader: DataLoader, config: dict[str]) -> tuple[VAE, list[float]]:
 
         training_config = config["training"]
         n_epochs = training_config["n_epochs"]

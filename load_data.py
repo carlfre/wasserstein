@@ -6,7 +6,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 
-def load_mnist(config: dict[str, dict[str]]):
+def load_mnist(config: dict[str]):
 
     training_config = config["training"]
     batch_size = training_config["batch_size"]
