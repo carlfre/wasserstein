@@ -62,13 +62,13 @@ def discriminator_training_iteration(
 
 
 def wgan_train_epoch(
-    models: tuple[torch.nn.Module],
-    optimizers: tuple[Optimizer],
+    generator: torch.nn.Module,
+    discriminator: DiscriminatorWGAN,
+    g_optimizer: torch.optim.Optimizer,
+    d_optimizer: torch.optim.Optimizer,
     data_loader: DataLoader,
     config: dict,
 ) -> tuple[list[float], list[float]]:
-    generator, discriminator = models
-    g_optimizer, d_optimizer = optimizers
 
     training_config = config["training"]
     model_config = config["model_specifics"]
@@ -100,7 +100,35 @@ def wgan_train_epoch(
                 x, generator, discriminator, g_optimizer, latent_dim, latent_distribution, device
             )
         )
-    return d_losses, g_losses
+    return g_losses, d_losses 
 
 
-#TODO: add a train loop function. Modeled after vae trianing.
+def train_wgan(
+        generator: torch.nn.Module,
+        discriminator: DiscriminatorWGAN,
+        dataloader: DataLoader,
+        config: dict
+) -> tuple[torch.nn.Module, DiscriminatorWGAN, list[float], list[float]]:
+
+    training_config = config["training"]
+    n_epochs = training_config["n_epochs"]
+    learning_rate = training_config["learning_rate"]
+
+    losses_g = []
+    losses_d = []
+    g_optimizer = torch.optim.Adam(generator.parameters(), lr=learning_rate)
+    d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=learning_rate)
+    for epoch in range(n_epochs):
+        epoch_g_losses, epoch_d_losses = wgan_train_epoch(
+            generator,
+            discriminator,
+            g_optimizer,
+            d_optimizer,
+            dataloader,
+            config,
+        )
+        losses_g.append(np.mean(epoch_g_losses))
+        losses_d.append(np.mean(epoch_d_losses))
+    return generator, discriminator, losses_g, losses_d
+
+

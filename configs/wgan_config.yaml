@@ -1,8 +1,10 @@
+model_type: "wgan"
+
 training:
   batch_size: 64
   transform: "identity"
   device: "cuda"
-  n_epochs: 100
+  n_epochs: 2
   learning_rate: 0.0002
 
 model_specifics:

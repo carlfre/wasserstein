@@ -1,4 +1,5 @@
 from typing import Literal, Callable
+import csv
 
 import torch
 
@@ -14,5 +15,24 @@ def create_samples(g_model: Callable, input_z: torch.Tensor, batch_size: int, im
     g_output = g_model(input_z)
     images = torch.reshape(g_output, (batch_size, *image_size))
     return (images+1)/2.0
+
+
+
+
+def write_list_to_csv(
+    content: list,
+    file_path: str
+) -> None:
+    with open(file_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(content)
+
+def read_list_from_csv(
+    file_path: str
+) -> list:
+    with open(file_path, 'r') as f:
+        reader = csv.reader(f)
+        content = next(reader)
+    return [float(i) for i in content]
 
 
