@@ -14,18 +14,18 @@ def load_mnist(config: dict[str, dict[str]]):
 
     image_path = './data'
 
-    match transform:
-        case "normalize":
-            transform = transforms.Compose([
-                transforms.ToTensor(),
-                transforms.Normalize(mean=(0.5,), std=(0.5,))
-            ])
-        case "identity":
+
+    if transform == "normalize":
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=(0.5,), std=(0.5,))
+        ])
+    elif transform == "identity":
             transform = transforms.Compose([
                 transforms.ToTensor()
             ])
-        case _:
-            raise ValueError("Invalid transform argument. Use 'identity' or 'normalize'.")
+    else:
+        raise ValueError("Invalid transform argument. Use 'identity' or 'normalize'.")
 
 
     train_set = torchvision.datasets.MNIST(
