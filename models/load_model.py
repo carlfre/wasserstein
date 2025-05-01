@@ -7,7 +7,7 @@ from models.vae import VAE, Decoder, Encoder
 
 
 
-def load_vae_model(config: dict[str, dict], vae_path: str | None = None):
+def load_vae_model(config: dict[str, dict], vae_path: Optional[str] = None):
     """
     Load the VAE model from the specified path.
     """
