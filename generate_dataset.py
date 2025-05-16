@@ -46,8 +46,8 @@ def generate_dataset_vae(
     with torch.no_grad():
         generated_samples = vae.decoder(z)
 
-    if len(generated_samples.shape) == 4:
-        generated_samples = generated_samples[:, 0, :, :]
+    # if len(generated_samples.shape) == 4:
+    #     generated_samples = generated_samples[:, 0, :, :]
 
     dataset = GeneratedDataset(generated_samples.cpu())
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
