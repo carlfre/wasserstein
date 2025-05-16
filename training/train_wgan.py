@@ -82,7 +82,7 @@ def wgan_train_epoch(
 
     generator.train()
     d_losses, g_losses = [], []
-    for i, (x, _) in enumerate(data_loader):
+    for batch_idx, (x, _) in enumerate(data_loader):
         for _ in range(n_critic_iterations):
             d_loss = discriminator_training_iteration(
                 x,

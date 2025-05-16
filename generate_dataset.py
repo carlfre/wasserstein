@@ -48,6 +48,7 @@ def generate_dataset_vae(
 
     # if len(generated_samples.shape) == 4:
     #     generated_samples = generated_samples[:, 0, :, :]
+    print(generated_samples.shape)
 
     dataset = GeneratedDataset(generated_samples.cpu())
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
@@ -85,12 +86,13 @@ def generate_dataset_wgan(
 
     # Generate random latent vectors
     # z = torch.randn(dataset_size, latent_dim).to(device)
-    z = create_noise(batch_size, latent_dim, latent_distribution).to(device)
+    z = create_noise(dataset_size, latent_dim, latent_distribution).to(device)
     
     with torch.no_grad():
         generator.eval()
         generated_samples = generator(z)
     
+    # print(generated_samples.shape)
     # Move the generated samples to CPU
     dataset = GeneratedDataset(generated_samples.cpu())
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)

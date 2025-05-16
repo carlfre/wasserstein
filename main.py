@@ -40,9 +40,7 @@ def big_loop_vae(n_generations: int, dataset_size: int, run_label: str = "") -> 
             model.state_dict(),
             f"checkpoints/gen_{i}_vae_{run_label}.pth"
         )
-        # _, previous_dataloader = generate_dataset_vae(model, dataset_size, config)
-        train_loader, test_loader, train_set, test_set = load_mnist(config)
-        previous_dataloader = train_loader
+        _, previous_dataloader = generate_dataset_vae(model, dataset_size, config)
 
     df = pd.DataFrame.from_dict(loss_per_generation, orient="index", columns=["loss"])
     df.to_csv(f'output/losses/losses_vae_{run_label}.csv', index_label="generation")
@@ -90,8 +88,8 @@ def big_loop_wgan(n_generations: int, dataset_size: int, run_label: str = "" ) -
 # TODO: add a big loop for wgan
 
 if __name__ == "__main__":
-    big_loop_vae(4, 60000, "debugging")
-    # big_loop_wgan(30, 60000, "experiment_1")
+    big_loop_vae(20, 60000, "experiment_2")
+    # big_loop_wgan(20, 60000, "experiment_2")
 
 
 # train_loader, test_loader, train_set, test_set = load_mnist(batch_size=batch_size)
