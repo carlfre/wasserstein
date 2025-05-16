@@ -14,7 +14,7 @@ from models.load_model import load_vae_model, load_generator_model, load_discrim
 from training.train_vae import train_vae
 from training.train_wgan import train_wgan
 from generate_dataset import generate_dataset_vae, generate_dataset_wgan
-
+from time import time
 # from utils import 
 
 def big_loop_vae(n_generations: int, dataset_size: int, run_label: str = "") -> None:
@@ -25,12 +25,16 @@ def big_loop_vae(n_generations: int, dataset_size: int, run_label: str = "") -> 
     
     loss_per_generation: dict[int, float] = {}
     for i in range(n_generations):
+        start_time = time()
 
         model = load_vae_model(config)
         model, generation_losses = train_vae(model, previous_dataloader, config)
         # loss_per_generation.append(generation_losses[-1])
         loss_per_generation[i] = generation_losses[-1]
         print(f"Generation {i} complete. Loss: {loss_per_generation[i]}")
+        print(f"Time taken: {time() - start_time} seconds")
+        print(len(previous_dataloader))
+        print(previous_dataloader.dataset.data.shape)
         
         torch.save(
             model.state_dict(),
@@ -84,8 +88,8 @@ def big_loop_wgan(n_generations: int, dataset_size: int, run_label: str = "" ) -
 # TODO: add a big loop for wgan
 
 if __name__ == "__main__":
-    # big_loop_vae(3, 10000)
-    big_loop_wgan(30, 60000, "experiment_1")
+    big_loop_vae(30, 60000, "experiment_1")
+    # big_loop_wgan(30, 60000, "experiment_1")
 
 
 # train_loader, test_loader, train_set, test_set = load_mnist(batch_size=batch_size)
