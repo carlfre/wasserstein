@@ -85,10 +85,62 @@ def big_loop_wgan(n_generations: int, dataset_size: int, run_label: str = "" ) -
     df.to_csv(f'output/losses/losses_wgan_{run_label}.csv', index_label="generation")
     print("Done!")
 
-# TODO: add a big loop for wgan
 
 if __name__ == "__main__":
-    big_loop_vae(20, 60000, "experiment_2")
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description="Train VAE and WGAN models.")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--vae", action="store_true", help="Train VAE model.")
+    group.add_argument("--wgan", action="store_true", help="Train WGAN model.")
+
+    parser.add_argument(
+        "--n_generations",
+        type=int,
+        default=1,
+        help="Number of generations to run.",
+    )
+    parser.add_argument(
+        "--dataset_size",
+        type=int,
+        default=60000,
+        help="Size of the dataset to generate.",
+    )
+    parser.add_argument(
+        "--run_label",
+        type=str,
+        default="",
+        help="Label for the run.",
+    )
+    parser.add_argument(
+        "--n_threads",
+        type=int,
+        default=1,
+        help="Number of threads to use.",
+    )
+    parser.add_argument(
+        "--n_interop_threads",
+        type=int,
+        default=1,
+        help="Number of interop threads to use.",
+    )
+
+    args = parser.parse_args()
+
+    if args.n_threads < 1 or args.n_interop_threads < 1:
+        parser.error("n_threads and n_interop_threads must be >= 1")
+
+
+    # Set the number of threads for PyTorch
+    torch.set_num_threads(args.n_threads)
+    torch.set_num_interop_threads(args.n_interop_threads)
+
+    if args.vae:
+        big_loop_vae(args.n_generations, args.dataset_size, args.run_label)
+    if args.wgan:
+        big_loop_wgan(args.n_generations, args.dataset_size, args.run_label)
+
+
+    # big_loop_vae(20, 60000, "experiment_2")
     # big_loop_wgan(20, 60000, "experiment_2")
 
 
