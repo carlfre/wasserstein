@@ -85,7 +85,7 @@ def big_loop_wgan(n_generations: int, dataset_size: int, run_label: str = "" ) -
 
 if __name__ == "__main__":
     # big_loop_vae(3, 10000)
-    big_loop_wgan(3, 5000)
+    big_loop_wgan(30, 60000, "experiment_1")
 
 
 # train_loader, test_loader, train_set, test_set = load_mnist(batch_size=batch_size)
