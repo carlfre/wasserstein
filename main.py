@@ -35,7 +35,7 @@ def big_loop_vae(n_generations: int, dataset_size: int, run_label: str = "") -> 
         if i == 1:
             dataiter = iter(previous_dataloader)
             sample = next(dataiter)
-            print(f"Sample shape: {sample.shape}")
+            print(f"Sample shape: {len(sample), {sample[0].shape}}")
         print(f"Generation {i} complete. Loss: {loss_per_generation[i]}")
         print(f"Time taken: {time() - start_time} seconds")
         print(len(previous_dataloader))
