@@ -88,7 +88,7 @@ def big_loop_wgan(n_generations: int, dataset_size: int, run_label: str = "" ) -
 # TODO: add a big loop for wgan
 
 if __name__ == "__main__":
-    big_loop_vae(30, 60000, "experiment_1")
+    big_loop_vae(4, 60000, "debugging")
     # big_loop_wgan(30, 60000, "experiment_1")
 
 
