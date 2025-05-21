@@ -4,7 +4,7 @@ training:
   batch_size: 64
   transform: "identity"
   device: "cuda"
-  n_epochs: 100
+  n_epochs: 300
   learning_rate: 0.0002
 
 model_specifics:
@@ -12,4 +12,4 @@ model_specifics:
   lambda_gp: 10
   latent_distribution: "uniform"
   latent_dim: 100
-  n_critic_iterations: 5
+  n_critic_iterations: 2

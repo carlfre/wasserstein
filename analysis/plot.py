@@ -3,11 +3,11 @@ from typing import Union
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
+from torchvision.utils import make_grid
 
-from models.load_model import load_vae_model, load_generator_model, load_discriminator_model
+from models.load_model import load_vae_model, load_generator_model
 from generate_dataset import generate_dataset_vae, generate_dataset_wgan
 from load_data import load_config
-from torchvision.utils import make_grid
 
 
 #TODO: write some code for plotting an image nicely

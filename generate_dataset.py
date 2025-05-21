@@ -1,9 +1,14 @@
+from typing import Literal, Optional
+
 import torch
 from torch.utils.data import Dataset, DataLoader
 from models.vae import VAE
 from models.discriminators import DiscriminatorWGAN
 # from models.generators import make_generator_network_wgan
 from utils import create_noise
+
+from models.load_model import load_vae_model, load_generator_model
+from load_data import load_config
 
 
 class GeneratedDataset(Dataset):
@@ -98,3 +103,23 @@ def generate_dataset_wgan(
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     
     return dataset, dataloader
+
+
+def generate_data(model_type: Literal["vae", "wgan"], gen_nr: int, n_datapoints, label: str = "experiment_4", device: Optional[str] = None) -> list[torch.Tensor]:
+    if  model_type == "vae":
+        config = load_config("configs/vae_config.yaml")
+        vae_path = f"checkpoints/gen_{gen_nr}_vae_{label}.pth"
+        vae = load_vae_model(config, vae_path)
+        dataset, _ = generate_dataset_vae(vae, n_datapoints, config)
+    elif model_type == "wgan":
+        config = load_config("configs/wgan_config.yaml")
+        generator_path = f"checkpoints/gen_{gen_nr}_wgan_generator_{label}.pth"
+        generator = load_generator_model(config, generator_path)
+        dataset, _ = generate_dataset_wgan(generator, n_datapoints, config)
+    else:
+        raise ValueError("Invalid model type. Choose 'vae' or 'wgan'.")
+
+    images = [sample[0] for sample in dataset]
+    if device is not None:
+        images = [img.to(device) for img in images]
+    return images
