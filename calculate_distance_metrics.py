@@ -11,7 +11,7 @@ from load_data import load_mnist, load_config
 from models.load_model import load_vae_model, load_generator_model, load_discriminator_model
 from generate_dataset import generate_dataset_vae, generate_dataset_wgan, generate_data
 from time import time
-from scipy.stats import wasserstein_distance_nd
+#from scipy.stats import wasserstein_distance_nd
 from scipy.spatial.distance import jensenshannon
 from ignite.metrics import FID
 
@@ -99,8 +99,8 @@ for i in range(20):
     current_flattened = [img.numpy().flatten() for img in current_dataset]
 
     # Wasserstein
-    wasserstein = wasserstein_distance_nd(mnist_images_flattened, current_flattened)
-    print(wasserstein)
+    # wasserstein = wasserstein_distance_nd(mnist_images_flattened, current_flattened)
+    # print(wasserstein)
 
     # Jense-Shannon divergence
     JSD = jensenshannon(mnist_images_flattened, current_flattened)
