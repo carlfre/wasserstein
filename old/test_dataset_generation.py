@@ -53,7 +53,7 @@ else:
 #     loaded_dataset.plot(sample_index)
 import matplotlib.pyplot as plt
 import numpy as np
-from analysis.plot import plot_image
+from plotting import plot_image
 
 
 plot_image(sample)
