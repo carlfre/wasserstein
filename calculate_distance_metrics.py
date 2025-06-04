@@ -6,12 +6,13 @@ from torchvision import transforms
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
 import pandas as pd
+import numpy as np
 
 from load_data import load_mnist, load_config
 from models.load_model import load_vae_model, load_generator_model, load_discriminator_model
 from generate_dataset import generate_dataset_vae, generate_dataset_wgan, generate_data
 from time import time
-#from scipy.stats import wasserstein_distance_nd
+from scipy.stats import wasserstein_distance_nd
 from scipy.spatial.distance import jensenshannon
 # from ignite.metrics import FID
 
@@ -72,7 +73,7 @@ FID_metrics = []
 
 # Load MNIST dataset with appropriate transform (identity?) 
 config = load_config("configs/vae_config.yaml")
-n_images = 500
+n_images = 1000
 
 train_loader, _, _, _ = load_mnist(config)
 mnist_images = []
@@ -99,12 +100,13 @@ for i in range(20):
     current_flattened = [img.numpy().flatten() for img in current_dataset]
 
     # Wasserstein
-    # wasserstein = wasserstein_distance_nd(mnist_images_flattened, current_flattened)
-    # print(wasserstein)
+    wasserstein = wasserstein_distance_nd(mnist_images_flattened, current_flattened)
+    print(wasserstein)
 
     # Jense-Shannon divergence
-    JSD = jensenshannon(mnist_images_flattened, current_flattened)
-    print(JSD)
+    # JSD = jensenshannon(mnist_images_flattened, current_flattened, axis=1)
+    # print(np.mean(JSD)**2)
+    # print(len(JSD))
 
     # FID
     # metric = FID(num_features=1, feature_extractor=default_model)
