@@ -12,6 +12,7 @@ from models.load_model import load_vae_model, load_generator_model, load_discrim
 from generate_dataset import generate_dataset_vae, generate_dataset_wgan, generate_data
 from time import time
 from scipy.stats import wasserstein_distance_nd
+from scipy.spatial.distance import jensenshannon
 from ignite.metrics import FID
 
 # load FID model
@@ -100,6 +101,10 @@ for i in range(20):
     # Wasserstein
     wasserstein = wasserstein_distance_nd(mnist_images_flattened, current_flattened)
     print(wasserstein)
+
+    # Jense-Shannon divergence
+    JSD = jensenshannon(mnist_images_flattened, current_flattened)
+    print(JSD)
 
     # FID
     # metric = FID(num_features=1, feature_extractor=default_model)
