@@ -13,7 +13,7 @@ from generate_dataset import generate_dataset_vae, generate_dataset_wgan, genera
 from time import time
 #from scipy.stats import wasserstein_distance_nd
 from scipy.spatial.distance import jensenshannon
-from ignite.metrics import FID
+# from ignite.metrics import FID
 
 # load FID model
 
