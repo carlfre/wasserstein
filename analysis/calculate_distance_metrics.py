@@ -34,12 +34,11 @@ def preprocess_uint8_for_inception(images):
 # VAE
 
 wasserstein_metrics = []
-#KLD_metrics = []
 FID_metrics = []
 
 # Load MNIST dataset with appropriate transform (identity?) 
-config = load_config("configs/vae_config.yaml")
-n_images = 500
+config = load_config("configs/vae_config.yaml") # same batch size and identity transform for VAE and WGAN
+n_images = 1000
 
 train_loader, _, _, _ = load_mnist(config)
 
@@ -50,7 +49,7 @@ for batch_images, _ in train_loader:
 
 mnist_images_tensor = torch.cat(all_mnist_images, dim=0)
 
-# Shuffle
+# Shuffle if N < 60000
 num_samples = mnist_images_tensor.size(0)
 indices = torch.randperm(num_samples)
 mnist_images_tensor = mnist_images_tensor[indices]
