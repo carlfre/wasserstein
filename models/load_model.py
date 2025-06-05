@@ -1,9 +1,12 @@
 from typing import Optional
 
+import yaml
 import torch
-from models.discriminators import DiscriminatorWGAN
+
 from models.generators import make_generator_network_wgan
+from models.discriminators import DiscriminatorWGAN
 from models.vae import VAE, Decoder, Encoder
+from models.cnn import CNN_MNIST
 
 
 
@@ -69,6 +72,22 @@ def load_generator_model(config: dict[str, dict], generator_path: Optional[str] 
     generator.to(device)
     generator.eval()
     return generator
+
+def load_cnn_model(config_path: str = "configs/cnn_config.yaml", model_path: str = "checkpoints/cnn.pth"):
+    """
+    Load a CNN model from the specified path.
+    """
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
+
+    training_config = config["training"]
+    device = training_config["device"]
+    
+    cnn = CNN_MNIST()
+    cnn.load_state_dict(torch.load(model_path, map_location=device))
+    cnn.to(device)
+    cnn.eval()
+    return cnn
 
 
 

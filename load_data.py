@@ -18,7 +18,7 @@ def load_mnist(config: dict[str]):
     if transform == "normalize":
         transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean=(0.5,), std=(0.5,))
+            transforms.Normalize((0.1307,), (0.3081,))
         ])
     elif transform == "identity":
             transform = transforms.Compose([

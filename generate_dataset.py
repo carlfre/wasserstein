@@ -105,7 +105,14 @@ def generate_dataset_wgan(
     return dataset, dataloader
 
 
-def generate_data(model_type: Literal["vae", "wgan"], gen_nr: int, n_datapoints, label: str = "experiment_4", device: Optional[str] = None) -> list[torch.Tensor]:
+def generate_data(model_type: Literal["vae", "wgan"], gen_nr: int, n_datapoints, label: Optional[str] = None, device: Optional[str] = None) -> list[torch.Tensor]:
+    if label is None:
+        if model_type == "vae":
+            label = "experiment_4"
+        elif model_type == "wgan":
+            label = "experiment_5"
+    
+    
     if  model_type == "vae":
         config = load_config("configs/vae_config.yaml")
         vae_path = f"checkpoints/gen_{gen_nr}_vae_{label}.pth"
