@@ -14,105 +14,105 @@ from generate_dataset import generate_dataset_vae, generate_dataset_wgan, genera
 from time import time
 from scipy.stats import wasserstein_distance_nd
 from scipy.spatial.distance import jensenshannon
-# from ignite.metrics import FID
+from ignite.metrics import FID
 
-# load FID model
+from torchmetrics.image.fid import FrechetInceptionDistance
+import torch.nn.functional as F
 
-# from collections import OrderedDict
-
-# import torch
-# from torch import nn, optim
-
-# from ignite.engine import *
-# from ignite.handlers import *
-# from ignite.metrics import *
-# from ignite.metrics.clustering import *
-# from ignite.metrics.regression import *
-# from ignite.utils import *
-
-# create default evaluator for doctests
-
-# def eval_step(engine, batch):
-#     return batch
-
-# default_evaluator = Engine(eval_step)
-
-# create default optimizer for doctests
-
-# param_tensor = torch.zeros([1], requires_grad=True)
-# default_optimizer = torch.optim.SGD([param_tensor], lr=0.1)
-
-# create default trainer for doctests
-# as handlers could be attached to the trainer,
-# each test must define his own trainer using `.. testsetup:`
-
-# def get_default_trainer():
-
-#     def train_step(engine, batch):
-#         return batch
-
-#     return Engine(train_step)
-
-# create default model for doctests
-
-# default_model = nn.Sequential(OrderedDict([
-#     ('base', nn.Linear(4, 2)),
-#     ('fc', nn.Linear(2, 1))
-# ]))
-
-# manual_seed(666)
+def preprocess_uint8_for_inception(images):
+    # # Convert to float and normalize to [0, 1]
+    # images = images_uint8.to(torch.float32) / 255.0
+    # Repeat to 3 channels
+    images = images.repeat(1, 3, 1, 1)
+    # Resize to 299x299
+    images = F.interpolate(images, size=(299, 299), mode='bilinear', align_corners=False)
+    return images
 
 
-########################################################
+##########################################################################################
 
 # VAE
 
 wasserstein_metrics = []
-KLD_metrics = []
+#KLD_metrics = []
 FID_metrics = []
 
 # Load MNIST dataset with appropriate transform (identity?) 
 config = load_config("configs/vae_config.yaml")
-n_images = 1000
+n_images = 500
 
 train_loader, _, _, _ = load_mnist(config)
-mnist_images = []
 
-for images, labels in train_loader:
-    mnist_images.extend(images)  # images is a batch of tensors
+all_mnist_images = []
 
-mnist_images = mnist_images[:n_images]
+for batch_images, _ in train_loader:
+    all_mnist_images.append(batch_images)
 
-mnist_images = [img.numpy() for img in mnist_images]
-mnist_images_flattened = [img.flatten() for img in mnist_images]
+mnist_images_tensor = torch.cat(all_mnist_images, dim=0)
+
+# Shuffle
+num_samples = mnist_images_tensor.size(0)
+indices = torch.randperm(num_samples)
+mnist_images_tensor = mnist_images_tensor[indices]
+
+mnist_images_tensor = mnist_images_tensor[:n_images, :, :, :]
 
 
+# mnist_images = []
+
+# for images, labels in train_loader:
+#     mnist_images.extend(images)  # images is a batch of tensors
+
+# print(type(mnist_images))
+# mnist_images = mnist_images[:n_images]
+# print(type(mnist_images))
+# #print(mnist_images.shape)
+
+# mnist_images = [img.numpy() for img in mnist_images]
+# mnist_images_flattened = [img.flatten() for img in mnist_images]
+
+# Preprocessing of MNIST for FID
+mnist_images_tensor = (mnist_images_tensor * 255).clamp(0,255).to(torch.uint8)
+mnist_images_tensor = preprocess_uint8_for_inception(mnist_images_tensor)
 
 # Big loop: for generations i from 0 to 20
 for i in range(20):
     print(f"pre gen {i}")
     # Initialise model of generation i
-    current_dataset = generate_data(model_type='vae', gen_nr=i, n_datapoints=n_images)
+    current_dataset = generate_data(model_type='wgan', label="experiment_4", gen_nr=i, n_datapoints=n_images)
+    current_dataset_tensor = torch.stack(current_dataset)
     print(f"post gen {i}")
     # Generate dataset from generation i
 
     # Calculate Wasserstein, KLD and FID between current dataset and MNIST
-    current_flattened = [img.numpy().flatten() for img in current_dataset]
 
     # Wasserstein
-    wasserstein = wasserstein_distance_nd(mnist_images_flattened, current_flattened)
-    print(wasserstein)
+    current_flattened = [img.numpy().flatten() for img in current_dataset]
+    # wasserstein = wasserstein_distance_nd(mnist_images_flattened, current_flattened)
+    # print(wasserstein)
 
     # Jense-Shannon divergence
     # JSD = jensenshannon(mnist_images_flattened, current_flattened, axis=1)
     # print(np.mean(JSD)**2)
     # print(len(JSD))
 
+    print(type(current_dataset_tensor), current_dataset_tensor.shape)
+    print(type(mnist_images_tensor), mnist_images_tensor.shape)
+
     # FID
-    # metric = FID(num_features=1, feature_extractor=default_model)
-    # metric.attach(default_evaluator, "fid")
-    # state = default_evaluator.run([[torch.stack(current_dataset), torch.stack(mnist_images)]])
-    # print(state.metrics["fid"])
+
+        # Preprocessing (images are in [0.0, 1.0] float format), must convert to torch.uint8
+    current_dataset_tensor = (current_dataset_tensor * 255).clamp(0,255).to(torch.uint8)
+    current_dataset_tensor = preprocess_uint8_for_inception(current_dataset_tensor)
+
+    fid = FrechetInceptionDistance(feature=64, input_img_size=(1,28,28))
+    # fid = FrechetInceptionDistance(feature=64)
+    fid.update(current_dataset_tensor, real=False)
+    fid.update(mnist_images_tensor, real=True)
+    fid_metric = fid.compute()
+    print(fid_metric)
+
+
 
     # Save metrics
 
